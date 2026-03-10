@@ -8,9 +8,9 @@ app.use(express.json({limit: '1mb'}))
 
 require('./modules/index')(app)
 
-app.use(express.static(path.join(__dirname, '../client')))
+app.use(express.static(path.join(__dirname, '../docs')))
 app.use('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/index.html'));
+    res.sendFile(path.join(__dirname, '../docs/index.html'));
 })
 
 server.listen(80, () => {
