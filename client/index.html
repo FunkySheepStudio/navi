@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="color-scheme" content="light dark">
+  <title>Youtube downloader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="/favicon.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+</head>
+
+<div id="app" />
+</html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.12/vue.global.prod.min.js" integrity="sha512-VS0ONvGw4vmxUhn0v3oWvGbKuxcAnhsRs4+EoUzeu7CzXrEaxQTr5SW0VuPk2fU5KzlSOl0x07IB/pLgLnm2Gg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue3-sfc-loader/dist/vue3-sfc-loader.js" integrity="sha512-+kUoJ6ppYmJdDHZL86KRzeayrtZWJMvixfx7AL/FDjXz2imqVsKER6PCbXyYKilEINL+YkJjKw/0SQjdBYudcQ==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/4.4.5/vue-router.global.js" integrity="sha512-qSJykEBMfoCCnGr6PrYrfV6i+HAdkS3+Tl2DcpkpSlIOMjtV2BZ+jDPSJuKL51LjNgXnRlCRcD2ESWRuJRXPGw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/sql.js@0.3.2/js/sql.js"></script>
+<script src="/lib/fetch-chunk.js"></script>
+<script src="/lib/leaflet-mbtiles.js"></script>
+<script src="/store/sensors.js"></script>
+
+<script>
+  const { createApp, watch } = Vue
+  const { loadModule } = window['vue3-sfc-loader']
+  
+  const { createRouter, createWebHistory } = VueRouter
+
+  const options = {
+    moduleCache: {
+      vue: Vue
+    },
+    async getFile(url) {
+      
+      const res = await fetch(url);
+      if ( !res.ok )
+        throw Object.assign(new Error(res.statusText + ' ' + url), { res });
+      return {
+        getContentData: asBinary => asBinary ? res.arrayBuffer() : res.text(),
+      }
+    },
+    addStyle(textContent) {
+      const style = Object.assign(document.createElement('style'), { textContent });
+      const ref = document.head.getElementsByTagName('style')[0] || null;
+      document.head.insertBefore(style, ref);
+    },
+  }
+
+  const router = createRouter({
+    history: createWebHistory(),
+    routes: [
+    { path: '/home', name: 'Home', component: () => loadModule('./pages/home.vue', options) },
+      { path: '/', redirect: { path: "/home" } }
+    ],
+  })
+
+  createApp({
+    components: {
+      'defaultLayout': Vue.defineAsyncComponent( () => loadModule('./layouts/index.vue', options) )
+    },
+    data() {
+      return {}
+    },
+    template: '<defaultLayout/>'
+  })
+  .use(sensors)
+  .use(router)
+  .mount('#app')
+</script>
