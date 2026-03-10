@@ -18,13 +18,13 @@ module.exports = {
     var map = new L.Map('map').fitWorld();
     var mb = L.tileLayer.mbTiles('./tiles/France1-12-SHOM.mbtiles', {
       minZoom: 0,
-      maxZoom: 12
+      maxZoom: 11
     }).addTo(map);
 
     mb.on('databaseloaded', (ev) => {
       let myLocation = L.marker([sensors.latitude, sensors.longitude]).addTo(map);
       this.path.push(myLocation.getLatLng())
-      map.flyTo([sensors.latitude, sensors.longitude], 12);
+      map.flyTo([sensors.latitude, sensors.longitude], 11);
 
       map.on('click', (e) => {
         let waypoint = L.marker(e.latlng).addTo(map);
