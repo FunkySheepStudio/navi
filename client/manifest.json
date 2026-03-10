@@ -1,0 +1,19 @@
+{
+  "name": "Navi",
+  "id": "http://localhost/",
+  "short_name": "Navi",
+  "description": "Navigation utility",
+  "icons": [
+    {
+      "src": "/imgs/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "http://localhost/",
+  "orientation": "portrait",
+  "display": "fullscreen",
+  "theme_color": "#000000",
+  "background_color": "#000000"
+}

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="color-scheme" content="light dark">
-  <title>Youtube downloader</title>
+  <title>Navi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="/favicon.png">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
@@ -22,6 +22,10 @@
 <script src="/store/sensors.js"></script>
 
 <script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+  }
+
   const { createApp, watch } = Vue
   const { loadModule } = window['vue3-sfc-loader']
   
@@ -50,8 +54,7 @@
   const router = createRouter({
     history: createWebHistory(),
     routes: [
-    { path: '/home', name: 'Home', component: () => loadModule('./pages/home.vue', options) },
-      { path: '/', redirect: { path: "/home" } }
+    { path: '/', name: 'Home', component: () => loadModule('./pages/home.vue', options) }
     ],
   })
 

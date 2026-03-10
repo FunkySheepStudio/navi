@@ -10,7 +10,7 @@ const sensors = reactive(
             }
 
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((position) => {
+                navigator.geolocation.watchPosition((position) => {
                     this.latitude = position.coords.latitude
                     this.longitude = position.coords.longitude
                 }, error);

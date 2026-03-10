@@ -22,9 +22,16 @@ module.exports = {
     }).addTo(map);
 
     mb.on('databaseloaded', (ev) => {
-      let myLocation = L.marker([sensors.latitude, sensors.longitude]).addTo(map);
-      this.path.push(myLocation.getLatLng())
-      map.flyTo([sensors.latitude, sensors.longitude], 11);
+      watch(() => this.sensors.latitude,
+        (value) => {
+          let myLocation = L.marker([sensors.latitude, sensors.longitude]).addTo(map);
+            this.path.push(myLocation.getLatLng())
+            map.flyTo([sensors.latitude, sensors.longitude], 11);
+        },
+        {
+            immediate: true
+        }
+      )
 
       map.on('click', (e) => {
         let waypoint = L.marker(e.latlng).addTo(map);
