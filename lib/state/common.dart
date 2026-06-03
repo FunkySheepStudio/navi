@@ -87,7 +87,12 @@ enum Property {
   water2Level('Fresh Water 2 Level', 'Water 2', Dimension.percentage, group: Group.systems),
   waypointBearing('Bearing to waypoint', 'Wpt Brg', Dimension.bearing, group: Group.navigation),
   waypointRange('Range to waypoint', 'Wpt Rng', Dimension.distance, group: Group.navigation),
-  yaw('Yaw angle', 'Yaw', Dimension.angle);
+  yaw('Yaw angle', 'Yaw', Dimension.angle),
+  aisPosition('AIS position', 'AIS GPS', Dimension.position, group: Group.navigation),
+  aisHeading('AIS heading', 'AIS Hdg', Dimension.bearing, group: Group.navigation),
+  aisSpeed('AIS speed', 'AIS SOG', Dimension.speed, group: Group.navigation),
+  aisCourse('AIS course', 'AIS COG', Dimension.bearing, group: Group.navigation),
+  aisShip('AIS ship', 'AIS Ship', Dimension.aisShip, sources: {}, group: Group.navigation);
 
   /// A long name suitable for use during selection, e.g. "Speed over ground".
   final String longName;
@@ -161,6 +166,7 @@ enum Dimension {
   pressure(type: SingleValue<double>, nativeUnits: 'pascals', derivationFriendly: true),
   rotationalSpeed(type: SingleValue<double>, nativeUnits: 'rpm', derivationFriendly: true),
   speed(type: SingleValue<double>, nativeUnits: 'meters/sec', derivationFriendly: true),
+  aisShip(type: AisShipValue, nativeUnits: 'AIS ship object'),
   temperature(type: SingleValue<double>, nativeUnits: 'degrees celcius'),
   time(type: SingleValue<DateTime>, nativeUnits: 'datetime'),
   voltage(type: SingleValue<double>, nativeUnits: 'volts', derivationFriendly: true);

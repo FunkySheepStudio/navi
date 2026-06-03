@@ -35,5 +35,27 @@ target_compile_definitions(${BINARY_NAME} PRIVATE "NOMINMAX")
 target_link_libraries(${BINARY_NAME} PRIVATE flutter flutter_wrapper_app)
 target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
 
+if(WIN32)
+  # Build the native CM93 wrapper before linking the Windows runner.
+  add_custom_target(cm93_wrapper_build
+    COMMENT "Configuring and building native/cm93 wrapper"
+    COMMAND ${CMAKE_COMMAND} -S "${CMAKE_CURRENT_SOURCE_DIR}/../../native/cm93" -B "${CMAKE_CURRENT_SOURCE_DIR}/../../native/cm93/build"
+    COMMAND ${CMAKE_COMMAND} -E remove -f
+      "${CMAKE_CURRENT_SOURCE_DIR}/../../native/cm93/build/cm93_wrapper.dll"
+      "${CMAKE_CURRENT_SOURCE_DIR}/../../native/cm93/build/cm93_wrapper.lib"
+      "${CMAKE_CURRENT_SOURCE_DIR}/../../native/cm93/build/cm93_wrapper.pdb"
+    COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_SOURCE_DIR}/../../native/cm93/build" --config $<CONFIG> --clean-first
+    USES_TERMINAL
+  )
+  add_dependencies(${BINARY_NAME} cm93_wrapper_build)
+endif()
+
+# Copy the native CM93 wrapper DLL into the app output folder so Dart FFI can load it.
+add_custom_command(TARGET ${BINARY_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../native/cm93/build/cm93_wrapper.dll"
+    $<TARGET_FILE_DIR:${BINARY_NAME}>
+)
+
 # Run the Flutter tool portions of the build. This must not be removed.
 add_dependencies(${BINARY_NAME} flutter_assemble)

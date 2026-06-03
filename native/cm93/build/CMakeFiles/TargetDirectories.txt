@@ -1,0 +1,6 @@
+C:/Users/Kaas/Documents/Dev/navi/native/cm93/build/CMakeFiles/cm93_wrapper.dir
+C:/Users/Kaas/Documents/Dev/navi/native/cm93/build/CMakeFiles/edit_cache.dir
+C:/Users/Kaas/Documents/Dev/navi/native/cm93/build/CMakeFiles/rebuild_cache.dir
+C:/Users/Kaas/Documents/Dev/navi/native/cm93/build/CMakeFiles/list_install_components.dir
+C:/Users/Kaas/Documents/Dev/navi/native/cm93/build/CMakeFiles/install.dir
+C:/Users/Kaas/Documents/Dev/navi/native/cm93/build/CMakeFiles/install/local.dir

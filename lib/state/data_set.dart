@@ -46,6 +46,9 @@ class DataSet with ChangeNotifier {
   /// A publicly assessible collections of data elements from the network.
   final Map<Source, Map<String, DataElement>> sources = {};
 
+  /// The latest AIS ships by MMSI.
+  final Map<int, AisShip> aisShips = {};
+
   /// This class's logger.
   static final _log = Logger('DataSet');
 
@@ -176,21 +179,28 @@ class DataSet with ChangeNotifier {
       // The presence of periodic null values lets us cancel this subscription
       // but we can ignore them during the processing.
       if (value != null) {
-        _websocketServer?.broadcast(value);
+          _websocketServer?.broadcast(value);
 
-        // Special case sending magnetic heading values to the true heading
-        // data element.
-        final targetProperty = (value.property == Property.headingMag)
-            ? Property.heading
-            : value.property;
-        final element = networkElements[targetProperty.name];
-        if (element == null) {
-          _log.warning('Got unrecognized network value: ${value.property}');
-        } else {
-          element.updateValue(value);
+          if (value.property == Property.aisShip) {
+            final aisValue = value.value as AisShipValue;
+            aisShips[aisValue.ship.mmsi] = aisValue.ship;
+            notifyListeners();
+            return;
+          }
+
+          // Special case sending magnetic heading values to the true heading
+          // data element.
+          final targetProperty = (value.property == Property.headingMag)
+              ? Property.heading
+              : value.property;
+          final element = networkElements[targetProperty.name];
+          if (element == null) {
+            _log.warning('Got unrecognized network value: ${value.property}');
+          } else {
+            element.updateValue(value);
+          }
         }
-      }
-    });
+      });
   }
 
   // Start an infinite stream to keep network values up to date by listening

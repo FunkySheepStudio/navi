@@ -14,6 +14,8 @@ import 'package:nmea_dashboard/state/specs.dart';
 import 'package:nmea_dashboard/state/websocket_server.dart';
 import 'package:nmea_dashboard/ui/forms/view_help.dart';
 import 'package:nmea_dashboard/ui/theme.dart';
+import 'package:nmea_dashboard/ui/pages/ais_map_page.dart';
+import 'package:nmea_dashboard/ui/pages/map_files_page.dart';
 import 'package:nmea_dashboard/ui/pages/data_table.dart';
 
 /// The minimum time for which we display the loading screen.
@@ -29,6 +31,7 @@ const SystemUiOverlayStyle overlayStyle = SystemUiOverlayStyle(
 );
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   final logSet = LogSet();
   Logger.root.onRecord.listen((record) => logSet.add(record));
   runApp(NmeaDashboardApp(logSet));
@@ -176,10 +179,14 @@ class _HomePage extends StatelessWidget {
       }
     });
     controller.addListener(() {
-      // Record the page selection whenever we finish transitioning
+      // Record the page selection whenever we finish transitioning.
+      // Ignore the static "Maps" page because it is not part of the saved page list.
       final currentPosition = controller.page;
       if (currentPosition == currentPosition!.roundToDouble()) {
-        dataSettings.selectPage(currentPosition.round());
+        final pageIndex = currentPosition.round();
+        if (pageIndex >= 0 && pageIndex < dataSettings.dataPageSpecs.length) {
+          dataSettings.selectPage(pageIndex);
+        }
       }
     });
 
@@ -201,12 +208,18 @@ class _HomePage extends StatelessWidget {
           autofocus: true,
           child: PageView(
             controller: controller,
-            children: dataSettings.dataPageSpecs.map((pageSpec) {
-              return ChangeNotifierProvider<DataPageSpec>.value(
-                value: pageSpec,
-                child: const DataTablePage(),
-              );
-            }).toList(),
+            children: [
+              ...dataSettings.dataPageSpecs.map((pageSpec) {
+                if (pageSpec.name.toLowerCase() == 'ais map') {
+                  return AisMapPage(title: pageSpec.name);
+                }
+                return ChangeNotifierProvider<DataPageSpec>.value(
+                  value: pageSpec,
+                  child: const DataTablePage(),
+                );
+              }),
+              const MapFilesPage(title: 'Maps'),
+            ],
           ),
         ),
       ),

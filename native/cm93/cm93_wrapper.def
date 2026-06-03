@@ -1,0 +1,6 @@
+LIBRARY "cm93_wrapper"
+EXPORTS
+    cm93_init
+    cm93_render
+    cm93_free_buffer
+    cm93_version

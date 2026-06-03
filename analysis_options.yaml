@@ -27,6 +27,9 @@ linter:
 
 formatter:
   page_width: 100
+analyzer:
+  errors:
+    camel_case_types: ignore
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

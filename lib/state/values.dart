@@ -170,6 +170,35 @@ class AugmentedBearing extends Value {
   }
 }
 
+/// A class representing an AIS tracked ship.
+class AisShip {
+  final int mmsi;
+  final double lat;
+  final double lon;
+  final double heading;
+  final double speed;
+  final double course;
+
+  AisShip(this.mmsi, this.lat, this.lon, this.heading, this.speed, this.course);
+}
+
+/// A value containing one AIS ship's data.
+class AisShipValue extends Value {
+  final AisShip ship;
+
+  AisShipValue(this.ship);
+
+  @override
+  String toString() {
+    return 'AIS ${ship.mmsi} @ ${ship.lat.toStringAsFixed(5)}, ${ship.lon.toStringAsFixed(5)}';
+  }
+
+  @override
+  String serialize() {
+    return '${ship.mmsi},${ship.lat},${ship.lon},${ship.heading},${ship.speed},${ship.course}';
+  }
+}
+
 /// A class to accumulate values of some type into an average.
 abstract class ValueAccumulator<V extends Value> {
   /// Returns the average of the values added into this accumulator.

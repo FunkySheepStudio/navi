@@ -175,8 +175,12 @@ Stream<BoundValue?> _valuesFromSimulation(NmeaParser parser) async* {
 List<String> _generateSimulatedSentences(int tick) {
   final timestamp = DateTime.now().toUtc();
   final timeString = _twoDigits(timestamp.hour) + _twoDigits(timestamp.minute) + _twoDigits(timestamp.second);
-  final lat = 51.0 + ((tick % 40) * 0.01);
-  final lon = -1.0 - ((tick % 40) * 0.01);
+  // Port Camargues (Le Grau-du-Roi) approx: 43.52N, 4.03E
+  final baseLat = 43.528633;
+  final baseLon = 4.1249061;
+  // small oscillation so simulated vessel moves slowly around the port
+  final lat = baseLat; //+ ((tick % 40) * 0.0005) - 0.01;
+  final lon = baseLon; //+ ((tick % 40) * 0.0005) - 0.01;
   final latString = _formatLatitude(lat);
   final southNorth = lat >= 0 ? 'N' : 'S';
   final lonString = _formatLongitude(lon);

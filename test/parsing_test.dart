@@ -133,6 +133,28 @@ void main() {
     );
   });
 
+  test('should parse ATT', () {
+    expect(
+      NmeaParser(true).parseString(r'$GPATT,123456.78,90.0,5.0,-2.0*12'),
+      BoundValueListMatches([
+        _boundSingleValue(90.0, Property.heading),
+        _boundSingleValue(5.0, Property.pitch),
+        _boundSingleValue(-2.0, Property.roll),
+      ]),
+    );
+  });
+
+  test('should parse FEC', () {
+    expect(
+      NmeaParser(true).parseString(r'$PFEC,GPatt,90.0,5.0,-2.0*12'),
+      BoundValueListMatches([
+        _boundSingleValue(90.0, Property.heading),
+        _boundSingleValue(5.0, Property.pitch),
+        _boundSingleValue(-2.0, Property.roll),
+      ]),
+    );
+  });
+
   test('should parse GGA with HDOP', () {
     expect(
       NmeaParser(

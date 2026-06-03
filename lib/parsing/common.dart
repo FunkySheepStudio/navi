@@ -11,6 +11,9 @@ import 'package:logging/logging.dart';
 import 'package:nmea_dashboard/state/common.dart';
 import 'package:nmea_dashboard/state/values.dart';
 
+part 'ais.dart';
+part 'att.dart';
+part 'fec.dart';
 part 'bwr.dart';
 part 'dbt.dart';
 part 'dpt.dart';
@@ -91,6 +94,9 @@ class MessageCounts {
 class NmeaParser {
   static final _log = Logger('NmeaParser');
   static final Map<String, SentenceParser> _parserMap = {
+    'AIVDM': AisParser(),
+    'ATT': AttParser(),
+    'FEC': FecParser(),
     'BWR': BwrParser(),
     'DBT': DbtParser(),
     'DPT': DptParser(),
@@ -172,16 +178,6 @@ class NmeaParser {
   /// unsupported message or a message with no data is received.
   /// If requireChecksum is true messages without a checksum are rejected.
   List<BoundValue> parseString(String string) {
-    if (string.startsWith('!')) {
-      // Silently discard the encapsulated (e.g. AIS) sentences which are often
-      // on the network.
-      return [];
-    } else if (!string.startsWith('\$')) {
-      // Thow an exception for any other prefix, its potentially a network
-      // parsing problem.
-      throw const FormatException('Message is not marked with \$');
-    }
-
     // Try to validate a checksum if there is one, throw an error if there
     // isn't a checksum but we require one.
     if (string.length > 3 && string[string.length - 3] == '*') {
@@ -195,11 +191,23 @@ class NmeaParser {
     }
 
     // Pull out the salient peices of whats left.
-    if (string.length < 7) {
-      throw const FormatException('Message is truncated');
+    String type;
+    List<String> fields;
+    if (string.startsWith('!AIVDM')) {
+      type = 'AIVDM';
+      fields = string.substring(8).split(',');
+    } else if (string.startsWith('\$PFEC,GPatt,')) {
+      type = 'FEC';
+      fields = string.substring(12).split(',');
+    } else if (string.startsWith('\$')) {
+      if (string.length < 7) {
+        throw const FormatException('Message is truncated');
+      }
+      type = string.substring(3, 6);
+      fields = string.substring(7).split(',');
+    } else {
+      throw const FormatException('Message is not marked with \$ or !AIVDM');
     }
-    final type = string.substring(3, 6);
-    final fields = string.substring(7).split(',');
 
     // Skip ignored sentence types.
     if (_ignoredMessages.contains(type)) {
@@ -266,11 +274,17 @@ BoundValue<SingleValue<double>>? _parseSingleValue(
   if (input.isEmpty) {
     return null;
   }
-  double number = double.parse(input);
+  double number = _parseDouble(input);
   if (divisor != null) {
     number = number / divisor;
   }
   return _boundSingleValue(number, property, tier: tier);
+}
+
+/// Parses a double from a string, removing any non-numeric characters except . and -.
+double _parseDouble(String input) {
+  final cleaned = input.replaceAll(RegExp(r'[^0-9.-]'), '');
+  return double.parse(cleaned);
 }
 
 // Created a BoundValue<SingleValue<double>> from the supplied input.
